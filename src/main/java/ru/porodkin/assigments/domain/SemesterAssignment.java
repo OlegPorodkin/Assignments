@@ -10,6 +10,7 @@ import java.util.*;
 @Getter @Setter
 @Entity
 @Table(name = "Assignments")
+@NamedEntityGraphs
 public class SemesterAssignment extends IdentificationEntity {
 
     @NotNull
