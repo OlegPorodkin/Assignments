@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Add Assignment</title>
+</head>
+<body>
+    <form th:action="@{/assignments/add}" th:object="${assignment}" method="post">
+        Task:
+        <input type="text" th:field="*{task}"/>
+        <br/>
+        Title:
+        <input type="text" th:field="*{title}">
+        <br/>
+        <input type="submit" value="Add"/>
+    </form>
+</body>
+</html>

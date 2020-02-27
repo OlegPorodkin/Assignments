@@ -5,12 +5,15 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.*;
 
-@Getter @Setter
+@Getter
+@Setter
+@NamedEntityGraph(name = "Assignment.all", includeAllAttributes = true)
 @Entity
 @Table(name = "Assignments")
-public class SemesterAssignment extends IdentificationEntity {
+public class SemesterAssignment extends IdentificationEntity implements Serializable {
 
     @NotNull
     @Column(length = 100)

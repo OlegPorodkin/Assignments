@@ -2,14 +2,18 @@ package ru.porodkin.assigments.domain;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Proxy;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 @Getter @Setter
 @Entity
-public class Teacher extends IdentificationEntity {
+//@Transactional
+@Proxy(lazy = false)
+public class Teacher extends IdentificationEntity implements Serializable {
 
     @NotNull
     @Column(length = 50)
