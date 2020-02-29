@@ -1,5 +1,8 @@
 package ru.porodkin.assigments.domain;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Temporal;
@@ -7,6 +10,8 @@ import javax.persistence.TemporalType;
 import java.io.Serializable;
 import java.util.Date;
 
+@Getter
+@Setter
 @Entity
 public class Schedule extends IdentificationEntity implements Serializable {
 

@@ -6,11 +6,19 @@
 </head>
 <body>
     <form th:action="@{/assignments/add}" th:object="${assignment}" method="post">
-        Task:
+        <a>Название предмета:</a>
+        <input type="text" th:field="*{title}"/>
+        <br/>
+        <a>Задание:</a>
         <input type="text" th:field="*{task}"/>
         <br/>
-        Title:
-        <input type="text" th:field="*{title}">
+        <a>Преподаватель:</a>
+        <form th:action="">
+
+        </form>
+        <br/>
+        Задание:
+        <input type="text" th:field="*{task}"/>
         <br/>
         <input type="submit" value="Add"/>
     </form>

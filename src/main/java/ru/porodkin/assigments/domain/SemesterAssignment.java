@@ -29,7 +29,7 @@ public class SemesterAssignment extends IdentificationEntity implements Serializ
     @ElementCollection(targetClass = TypeOfWork.class)
     private Set<TypeOfWork> typeOfWorkSet = new HashSet<>();
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany
     @JoinColumn(name = "assignments_fk")
     private List<Schedule> schedule = new ArrayList<>();
 

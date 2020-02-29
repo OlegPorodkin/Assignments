@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Assignments</title>
+</head>
+<body>
+    <p><a href="/">На главную</a></p>
+    <table border="1">
+        <tr>
+            <th>Предмет</th>
+            <th>Преподаватель</th>
+            <th>Вид зачета</th>
+            <th>Расписание</th>
+            <th>Задание</th>
+            <th>Рессурсы для скачивания</th>
+        </tr>
+        <tr th:each="assignment:${assignments}">
+            <th th:utext="${assignment.title}">...</th>
+            <th><a th:href="@{/teacher/{id}(id=${assignment.teacher.id})}" th:value="${assignment.teacher.nameDescription()}"></a></th>
+            <th th:each="typeOfWork : ${assignment.typeOfWorkSet}">
+                <a th:value="${typeOfWork.name()}"></a>
+            </th>
+            <th th:each="schedule : ${assignment.schedule}">
+                <a th:value="${schedule.getDate()}"></a><br>
+                <a th:value="${schedule.getBeginTime()}"></a><br>
+                <a th:value="${schedule.getEndTime()}"></a><br>
+            </th>
+            <th th:utext="${assignment.task}">...</th>
+            <th th:utext="">...</th>
+        </tr>
+    </table>
+    <p><a href="/assignments/add">Добавить</a></p>
+    <p><a href="/teacher">Преподователи</a></p>
+    <p></p>
+</body>
+</html>

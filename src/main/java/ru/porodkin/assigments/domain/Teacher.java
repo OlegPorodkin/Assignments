@@ -44,4 +44,8 @@ public class Teacher extends IdentificationEntity implements Serializable {
                 ", info='" + info + '\'' +
                 '}';
     }
+
+    public String nameDescription(){
+        return getLastName() + " " + getFirstName() + " " + getMiddleName();
+    }
 }

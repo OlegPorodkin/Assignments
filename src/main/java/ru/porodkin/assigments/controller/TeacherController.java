@@ -23,14 +23,14 @@ public class TeacherController extends AbstractController<Teacher>{
     public String getAllTeachers(Model model){
         List<Teacher> teachers = service.getAll();
         model.addAttribute("teachers", teachers);
-        return "/main/resources/templates/teacher/teacher.html";
+        return "teacher";
     }
 
     @GetMapping(path = "/add")
     public String viewAddTeacher(Model model){
         Teacher teacher = new Teacher();
         model.addAttribute("teacher", teacher);
-        return "/main/resources/templates/teacher/add_teacher.html";
+        return "add_teacher";
     }
 
     @PostMapping(path = "/add")
@@ -43,7 +43,7 @@ public class TeacherController extends AbstractController<Teacher>{
     public String viewUpdateTeacher(@PathVariable("id") Long id, Model model){
         Teacher teacher = service.getEntity(id);
         model.addAttribute("teacher", teacher);
-        return "/main/resources/templates/teacher/update_teacher.html";
+        return "update_teacher";
     }
 
     @PostMapping(path = "/update")
