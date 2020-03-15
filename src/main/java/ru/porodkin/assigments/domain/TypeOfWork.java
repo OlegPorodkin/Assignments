@@ -12,4 +12,8 @@ public enum TypeOfWork {
     TypeOfWork(String value) {
         this.value = value;
     }
+
+    public String getValue(){
+        return value;
+    }
 }

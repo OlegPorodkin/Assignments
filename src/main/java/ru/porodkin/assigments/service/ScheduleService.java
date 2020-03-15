@@ -26,23 +26,26 @@ public class ScheduleService implements AbstractService<Schedule>{
     }
 
     @Override
-    public Schedule getEntity(Long ID) {
-        return repository.getOne(ID);
+    public Optional<Schedule> getEntity(Long ID) {
+        return repository.findById(ID);
     }
 
     @Override
-    public Schedule update(Schedule entity) {
-        return repository.save(entity);
+    public Optional<Schedule> update(Long id, Schedule entity) {
+        Schedule save = repository.save(entity);
+        return Optional.of(save);
     }
 
     @Override
-    public Schedule save(Schedule entity) {
-        return repository.save(entity);
+    public Optional<Schedule> save(Schedule entity) {
+        Schedule save = repository.save(entity);
+        return Optional.of(save);
     }
 
     @Override
-    public void delete(Long ID) {
+    public Boolean delete(Long ID) {
         Optional<Schedule> byId = repository.findById(ID);
         repository.delete(byId.get());
+        return true;
     }
 }

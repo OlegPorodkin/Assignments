@@ -1,18 +1,20 @@
 package ru.porodkin.assigments.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.porodkin.assigments.domain.Teacher;
 import ru.porodkin.assigments.service.AbstractService;
 
+import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
 
-@Controller
-@RequestMapping(path = "teacher")
-public class TeacherController extends AbstractController<Teacher>{
+@RestController
+@RequestMapping("teacher")
+public class TeacherController extends AbstractController<Teacher> {
 
     @Autowired
     public TeacherController(AbstractService<Teacher> service) {
@@ -20,41 +22,52 @@ public class TeacherController extends AbstractController<Teacher>{
     }
 
     @GetMapping
-    public String getAllTeachers(Model model){
-        List<Teacher> teachers = service.getAll();
-        model.addAttribute("teachers", teachers);
-        return "teacher";
+    public ResponseEntity<List<Teacher>> getAllTeachers() {
+        List<Teacher> all = service.getAll();
+        return ResponseEntity.ok(all);
     }
 
-    @GetMapping(path = "/add")
-    public String viewAddTeacher(Model model){
-        Teacher teacher = new Teacher();
-        model.addAttribute("teacher", teacher);
-        return "add_teacher";
+    @GetMapping("{id}")
+    public ResponseEntity<Teacher> getOne(@PathVariable Long id) {
+        Teacher teacher;
+        try {
+            teacher = service.getEntity(id).orElseThrow(() -> new EntityNotFoundException("this id: " + id + " not found!"));
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity(new HashMap<String, String>() {{
+                put("id:" + id, "Teacher not found!");
+            }}, HttpStatus.BAD_REQUEST);
+        }
+        return ResponseEntity.ok(teacher);
     }
 
-    @PostMapping(path = "/add")
-    public String addTeacher(@ModelAttribute("teacher") @Valid Teacher teacher){
+    @PostMapping("/add")
+    public ResponseEntity<List<Teacher>> saveTeacher(@RequestBody @Valid Teacher teacher) {
         service.save(teacher);
-        return "redirect:/teacher";
+        List<Teacher> all = service.getAll();
+        return ResponseEntity.ok(all);
     }
 
-    @GetMapping(path = "/update/{id}")
-    public String viewUpdateTeacher(@PathVariable("id") Long id, Model model){
-        Teacher teacher = service.getEntity(id);
-        model.addAttribute("teacher", teacher);
-        return "update_teacher";
+    @PutMapping("{id}")
+    public ResponseEntity<Teacher> updateTeacher(@PathVariable Long id, @RequestBody Teacher teacher) {
+        Teacher updateTeacher;
+
+        try {
+            updateTeacher = service.update(id, teacher).orElseThrow(() -> new EntityNotFoundException("this id: " + id + " not found!"));
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity(new HashMap<String, String>() {{
+                put("id:" + id, "Teacher not found!");
+            }}, HttpStatus.BAD_REQUEST);
+        }
+
+        return ResponseEntity.ok(updateTeacher);
     }
 
-    @PostMapping(path = "/update")
-    public String update(@ModelAttribute("teacher") @Valid Teacher teacher){
-        service.update(teacher);
-        return "redirect:/teacher";
-    }
-
-    @GetMapping(path = "/delete/{id}")
-    public String deleteTeacher(@PathVariable("id")Long id){
-        service.delete(id);
-        return "redirect:/teacher";
+    @DeleteMapping("{id}")
+    public ResponseEntity<Teacher> deleteTeacher(@PathVariable Long id) {
+        return service.delete(id) ?
+                ResponseEntity.ok().build() :
+                new ResponseEntity(new HashMap<String, String>() {{
+                    put("id:" + id, "Teacher not found!");
+                }}, HttpStatus.BAD_REQUEST);
     }
 }

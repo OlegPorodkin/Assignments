@@ -6,6 +6,7 @@ import ru.porodkin.assigments.domain.SemesterAssignment;
 import ru.porodkin.assigments.repository.AssignmentRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Transactional
 @Service
@@ -19,28 +20,54 @@ public class AssignmentsService implements AbstractService<SemesterAssignment>{
 
     @Override
     public List<SemesterAssignment> getAll() {
-        List<SemesterAssignment> all = repository.findAll();
-        return all;
+        return repository.findAll();
     }
 
     @Override
-    public SemesterAssignment getEntity(Long ID) {
-        return null;
+    public Optional<SemesterAssignment> getEntity(Long ID) {
+        return repository.findById(ID);
     }
 
     @Override
-    public SemesterAssignment update(SemesterAssignment assignment) {
-        return assignment;
+    public Optional<SemesterAssignment> update(Long id, SemesterAssignment assignment) {
+        Optional<SemesterAssignment> updateAssignment = repository.findById(id);
+
+        if (!updateAssignment.isEmpty()){
+            updateAssignment.map(ua -> {
+                ua.setTitle(assignment.getTitle());
+                ua.setTeacher(assignment.getTeacher());
+                ua.setTypeOfWorkSet(assignment.getTypeOfWorkSet());
+                ua.setSchedule(assignment.getSchedule());
+                ua.setTask(assignment.getTask());
+                ua.setResources(assignment.getResources());
+
+                return ua;
+            });
+        } else {
+            return updateAssignment;
+        }
+
+        repository.save(updateAssignment.get());
+
+        return updateAssignment;
     }
 
     @Override
-    public SemesterAssignment save(SemesterAssignment entity) {
-        return repository.save(entity);
+    public Optional<SemesterAssignment> save(SemesterAssignment entity) {
+
+        SemesterAssignment save = repository.save(entity);
+        return Optional.of(save);
     }
 
     @Override
-    public void delete(Long ID) {
-
+    public Boolean delete(Long ID) {
+        Optional<SemesterAssignment> deleteAssignment = repository.findById(ID);
+        if (deleteAssignment.isEmpty())
+            return false;
+        else {
+            repository.delete(deleteAssignment.get());
+            return true;
+        }
     }
 
 }

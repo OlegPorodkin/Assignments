@@ -9,5 +9,4 @@ public abstract class AbstractController<T> {
     public AbstractController(AbstractService<T> service) {
         this.service = service;
     }
-
 }

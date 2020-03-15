@@ -11,7 +11,6 @@ import java.io.Serializable;
 
 @Getter @Setter
 @Entity
-//@Transactional
 @Proxy(lazy = false)
 public class Teacher extends IdentificationEntity implements Serializable {
 

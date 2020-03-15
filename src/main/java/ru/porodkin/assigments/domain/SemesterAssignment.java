@@ -26,10 +26,10 @@ public class SemesterAssignment extends IdentificationEntity implements Serializ
 
     @Column(name = "type_work")
     @JoinTable(name = "assign_typeofwork")
-    @ElementCollection(targetClass = TypeOfWork.class)
+    @ElementCollection(targetClass = TypeOfWork.class, fetch = FetchType.EAGER)
     private Set<TypeOfWork> typeOfWorkSet = new HashSet<>();
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "assignments_fk")
     private List<Schedule> schedule = new ArrayList<>();
 

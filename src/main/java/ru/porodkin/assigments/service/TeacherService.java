@@ -24,23 +24,49 @@ public class TeacherService implements AbstractService<Teacher> {
     }
 
     @Override
-    public Teacher getEntity(Long ID) {
-        return repository.getOne(ID);
+    public Optional<Teacher> getEntity(Long ID) {
+        return repository.findById(ID);
     }
 
     @Override
-    public Teacher update(Teacher teacher) {
-        return repository.save(teacher);
+    public Optional<Teacher> update(Long id, Teacher teacher) {
+
+        Optional<Teacher> updateTeacher = repository.findById(id);
+
+        if (!updateTeacher.isEmpty()) {
+            updateTeacher.map(ut -> {
+                ut.setId(id);
+                ut.setFirstName(teacher.getFirstName());
+                ut.setLastName(teacher.getLastName());
+                ut.setMiddleName(teacher.getMiddleName());
+                ut.setDepartment(teacher.getDepartment());
+                ut.setContacts(teacher.getContacts());
+                ut.setInfo(teacher.getInfo());
+                return ut;
+            });
+        } else {
+            return updateTeacher;
+        }
+
+        Teacher save = repository.save(updateTeacher.get());
+
+        return Optional.of(save);
     }
 
     @Override
-    public Teacher save(Teacher entity) {
-        return repository.save(entity);
+    public Optional<Teacher> save(Teacher entity) {
+        Teacher save = repository.save(entity);
+        return Optional.of(save);
     }
 
     @Override
-    public void delete(Long ID) {
-        Optional<Teacher> byId = repository.findById(ID);
-        repository.delete(byId.get());
+    public Boolean delete(Long ID) {
+        Optional<Teacher> deleteTeacher = repository.findById(ID);
+        if (deleteTeacher.isEmpty()) {
+            return false;
+        } else {
+            repository.delete(deleteTeacher.get());
+            return true;
+        }
     }
 }

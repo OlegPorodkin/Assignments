@@ -1,16 +1,17 @@
 package ru.porodkin.assigments.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.porodkin.assigments.domain.Schedule;
 import ru.porodkin.assigments.service.AbstractService;
 
-import javax.validation.Valid;
+import javax.persistence.EntityNotFoundException;
+import java.util.HashMap;
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/schedule")
 public class ScheduleController extends AbstractController<Schedule> {
 
@@ -20,41 +21,52 @@ public class ScheduleController extends AbstractController<Schedule> {
     }
 
     @GetMapping
-    public String getAllSchedule(Model model){
-        List<Schedule> schedules = service.getAll();
-        model.addAttribute("schedules", schedules);
-        return "";
+    public ResponseEntity<List<Schedule>> getAllSchedule(){
+        List<Schedule> all = service.getAll();
+        return ResponseEntity.ok(all);
     }
 
-    @GetMapping(path = "/add")
-    public String viewAddSchedule(Model model){
-        Schedule schedule = new Schedule();
-        model.addAttribute("schedule", schedule);
-        return "";
+    @GetMapping("{id}")
+    public ResponseEntity<Schedule> getOne(@PathVariable Long id){
+        Schedule schedule;
+
+        try{
+            schedule = service.getEntity(id).orElseThrow(() -> new EntityNotFoundException("this id: " + id + " not found!"));
+        }catch (Exception e){
+            return new ResponseEntity(new HashMap<String, String>() {{
+                put("id:" + id, "Schedule not found!");
+            }}, HttpStatus.BAD_REQUEST);
+        }
+
+        return ResponseEntity.ok(schedule);
     }
 
-    @PostMapping(path = "/add")
-    public String addSchedule(@ModelAttribute("schedule") @Valid Schedule schedule){
+    @PostMapping("/add")
+    public ResponseEntity<List<Schedule>> saveSchedule(@RequestBody Schedule schedule){
         service.save(schedule);
-        return "redirect:/schedule";
+        List<Schedule> all = service.getAll();
+        return ResponseEntity.ok(all);
     }
 
-    @GetMapping(path = "/update/{id}")
-    public String viewUpdateSchedule(@PathVariable("id") Long id, Model model){
-        Schedule schedule = service.getEntity(id);
-        model.addAttribute("schedule", schedule);
-        return "";
+    @PutMapping("{id}")
+    public ResponseEntity<Schedule> viewUpdateSchedule(@PathVariable("id") Long id, Schedule schedule){
+        Schedule updateSchedule;
+
+        try {
+            updateSchedule = service.update(id, schedule).orElseThrow(() -> new EntityNotFoundException("this id: " + id + " not found!"));
+        } catch (Exception e) {
+            return new ResponseEntity(new HashMap<String, String>() {{
+                put("id:" + id, "schedule not found!");
+            }}, HttpStatus.BAD_REQUEST);
+        }
+
+        return ResponseEntity.ok(updateSchedule);
     }
 
-    @PostMapping(path = "/update")
-    public String updateSchedule(@ModelAttribute("schedule") @Valid Schedule schedule){
-        service.update(schedule);
-        return "redirect:/schedule";
-    }
-
-    @DeleteMapping(path = "/delete/{id}")
-    public String deleteSchedule(@PathVariable("id")Long id){
-        service.delete(id);
-        return "redirect:/schedule";
+    @DeleteMapping("{id}")
+    public ResponseEntity<Schedule> deleteSchedule(@PathVariable("id")Long id){
+        return service.delete(id) ?
+                ResponseEntity.ok().build() :
+                new ResponseEntity(new HashMap<String, String>() {{ put("id:" + id, "Schedule not found!"); }}, HttpStatus.BAD_REQUEST);
     }
 }

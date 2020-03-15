@@ -1,73 +1,74 @@
 package ru.porodkin.assigments.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import ru.porodkin.assigments.domain.Schedule;
 import ru.porodkin.assigments.domain.SemesterAssignment;
-import ru.porodkin.assigments.domain.Teacher;
 import ru.porodkin.assigments.service.AssignmentsService;
-import ru.porodkin.assigments.service.ScheduleService;
-import ru.porodkin.assigments.service.TeacherService;
 
-import javax.validation.Valid;
+import javax.persistence.EntityNotFoundException;
+import java.util.HashMap;
 import java.util.List;
 
 @Controller
 @RequestMapping(path = "/assignments")
 public class AssignmentsController extends AbstractController<SemesterAssignment> {
 
-    private TeacherService teacherService;
-    private ScheduleService scheduleService;
-
     @Autowired
-    public AssignmentsController(AssignmentsService service, TeacherService teacherService, ScheduleService scheduleService) {
+    public AssignmentsController(AssignmentsService service) {
         super(service);
-        this.teacherService = teacherService;
-        this.scheduleService = scheduleService;
     }
 
     @GetMapping()
-    public String getAll(Model model){
+    public ResponseEntity<List<SemesterAssignment>> getAll() {
         List<SemesterAssignment> allAssignment = service.getAll();
-        model.addAttribute("assignments", allAssignment);
-        return "assignment";
+        return ResponseEntity.ok(allAssignment);
     }
 
-    @GetMapping(params = "id")
-    public String getEntity(@RequestParam(value = "id", defaultValue = "0") long id, Model model){
-        SemesterAssignment assignment = service.getEntity(id);
-        model.addAttribute("assignment", assignment);
-        return "assignment";
+    @GetMapping("{id}")
+    public ResponseEntity<SemesterAssignment> getOne(@PathVariable("id") Long id) {
+        SemesterAssignment assignment;
+
+        try {
+            assignment = service.getEntity(id).orElseThrow(() -> new EntityNotFoundException("this id: " + id + " not found!"));
+        } catch (Exception e) {
+            return new ResponseEntity(new HashMap<String, String>() {{
+                put("id:" + id, "Assignment not found!");
+            }}, HttpStatus.BAD_REQUEST);
+        }
+
+        return ResponseEntity.ok(assignment);
     }
 
-    @GetMapping(path = "/add")
-    public String showAddSaveEntity(Model model){
-        SemesterAssignment assignment = new SemesterAssignment();
-        List<Teacher> teachers = teacherService.getAll();
-        List<Schedule> schedules = scheduleService.getAll();
-        model.addAttribute("assignment", assignment);
-        model.addAttribute("teachers", teachers);
-        model.addAttribute("schedules", schedules);
-        return "add_assignment";
-    }
-
-    @PostMapping(path = "/add")
-    public String saveEntity(@ModelAttribute("assignment") @Valid SemesterAssignment assignment){
+    @PostMapping("/add")
+    public ResponseEntity<List<SemesterAssignment>> saveAssignment(@RequestBody SemesterAssignment assignment) {
         service.save(assignment);
-        return "redirect:/assignments";
+        List<SemesterAssignment> all = service.getAll();
+        return ResponseEntity.ok(all);
     }
 
-    @PutMapping(path = "/update")
-    public String update(@ModelAttribute("assignment") SemesterAssignment assignment){
-        service.update(assignment);
-        return "redirect:/assignments";
+    @PutMapping("{id}")
+    public ResponseEntity<SemesterAssignment> updateAssignment(@PathVariable("id") Long id, @RequestBody SemesterAssignment assignment) {
+        SemesterAssignment updateAssignment;
+
+        try {
+            updateAssignment = service.update(id, assignment).orElseThrow(() -> new EntityNotFoundException("this id: " + id + " not found!"));
+        } catch (Exception e) {
+            return new ResponseEntity(new HashMap<String, String>() {{
+                put("id:" + id, "Assignment not found!");
+            }}, HttpStatus.BAD_REQUEST);
+        }
+
+        return ResponseEntity.ok(updateAssignment);
     }
 
-    @DeleteMapping(path = "/delete")
-    public String delete(@ModelAttribute("assignment") SemesterAssignment assignment){
-        service.delete(assignment.getId());
-        return "redirect:/assignments";
+    @DeleteMapping("{id}")
+    public ResponseEntity<SemesterAssignment> deleteAssignment(@PathVariable("id") Long id) {
+
+        return service.delete(id) ?
+                ResponseEntity.ok().build() :
+                new ResponseEntity(new HashMap<String, String>() {{ put("id:" + id, "Assignment not found!"); }}, HttpStatus.BAD_REQUEST);
     }
 }
