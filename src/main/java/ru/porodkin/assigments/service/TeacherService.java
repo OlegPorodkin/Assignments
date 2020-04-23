@@ -36,9 +36,7 @@ public class TeacherService implements AbstractService<Teacher> {
         if (!updateTeacher.isEmpty()) {
             updateTeacher.map(ut -> {
                 ut.setId(id);
-                ut.setFirstName(teacher.getFirstName());
-                ut.setLastName(teacher.getLastName());
-                ut.setMiddleName(teacher.getMiddleName());
+                ut.setFullName(teacher.getFullName());
                 ut.setDepartment(teacher.getDepartment());
                 ut.setContacts(teacher.getContacts());
                 ut.setInfo(teacher.getInfo());

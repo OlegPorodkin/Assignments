@@ -5,31 +5,27 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.porodkin.assigments.domain.SemesterAssignment;
+import ru.porodkin.assigments.repository.TeacherRepository;
 import ru.porodkin.assigments.service.AssignmentsService;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping(path = "/assignments")
 public class AssignmentsController extends AbstractController<SemesterAssignment> {
 
+    private final TeacherRepository teacherRepository;
+
     @Autowired
-    public AssignmentsController(AssignmentsService service) {
+    public AssignmentsController(AssignmentsService service, TeacherRepository teacherRepository) {
         super(service);
+        this.teacherRepository = teacherRepository;
     }
 
     @GetMapping()
     public ResponseEntity<List<SemesterAssignment>> getAll() {
         List<SemesterAssignment> allAssignment = service.getAll();
-//        List<SemesterAssignment> result = new ArrayList<>();
-//        for (SemesterAssignment assignment : allAssignment) {
-//            Set<TypeOfWork> typeOfWorkSet = assignment.getTypeOfWorkSet();
-//            for (TypeOfWork typeOfWork : typeOfWorkSet) {
-//                String value = typeOfWork.getValue();
-//            }
-//        }
 
         return ResponseEntity.ok(allAssignment);
     }
@@ -50,10 +46,13 @@ public class AssignmentsController extends AbstractController<SemesterAssignment
     }
 
     @PostMapping("/add")
-    public ResponseEntity<List<SemesterAssignment>> saveAssignment(@RequestBody SemesterAssignment assignment) {
-        service.save(assignment);
-        List<SemesterAssignment> all = service.getAll();
-        return ResponseEntity.ok(all);
+    public ResponseEntity<SemesterAssignment> saveAssignment(@RequestBody SemesterAssignment assignment) {
+        System.out.println(assignment);
+//        assignment.setTeacher(teacherRepository.findById(1L).get());
+//        Optional<SemesterAssignment> save = service.save(assignment);
+
+//        List<SemesterAssignment> all = service.getAll();
+        return ResponseEntity.ok(/*save.get()*/).build();
     }
 
     @PutMapping("{id}")

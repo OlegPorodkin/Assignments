@@ -1,5 +1,6 @@
 package ru.porodkin.assigments.domain;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Proxy;
@@ -11,20 +12,13 @@ import java.io.Serializable;
 
 @Getter @Setter
 @Entity
+@EqualsAndHashCode(callSuper = true, exclude = {"id"})
 @Proxy(lazy = false)
 public class Teacher extends IdentificationEntity implements Serializable {
 
     @NotNull
-    @Column(length = 50)
-    private String firstName;
-
-    @NotNull
-    @Column(length = 50)
-    private String lastName;
-
-    @NotNull
-    @Column(length = 50)
-    private String middleName;
+    @Column(length = 256)
+    private String fullName;
     private String department;
     private String contacts;
 
@@ -35,16 +29,10 @@ public class Teacher extends IdentificationEntity implements Serializable {
     public String toString() {
         return "Teacher{" +
                 "id='" + id + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", middleName='" + middleName + '\'' +
+                ", fullName='" + fullName + '\'' +
                 ", department='" + department + '\'' +
                 ", contacts='" + contacts + '\'' +
                 ", info='" + info + '\'' +
                 '}';
-    }
-
-    public String nameDescription(){
-        return getLastName() + " " + getFirstName() + " " + getMiddleName();
     }
 }

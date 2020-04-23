@@ -1,5 +1,6 @@
 package ru.porodkin.assigments.domain;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +11,7 @@ import java.util.*;
 
 @Getter
 @Setter
+@EqualsAndHashCode(callSuper = true, exclude = {"id"})
 @NamedEntityGraph(name = "Assignment.all", includeAllAttributes = true)
 @Entity
 @Table(name = "Assignments")
@@ -19,7 +21,7 @@ public class SemesterAssignment extends IdentificationEntity implements Serializ
     @Column(length = 100)
     private String title;
 
-    @NotNull
+//    @NotNull
     @OneToOne
     @JoinColumn(name = "teacher_assign", nullable = false)
     private Teacher teacher;
